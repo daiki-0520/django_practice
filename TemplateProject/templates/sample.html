@@ -1,0 +1,18 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'download/home.css' %}">
+<h1>{{name | upper}}</h1>
+<h1>{{page_url | urlize}}</h1>
+<p>BMI: {{ bmi | floatformat:2}}</p>
+<p>{{ salary | default:'秘密' }}</p>
+<p>{{ fruits | random | upper}}</p>
+<p>{{ fruits | join:','}}</p>
+<p>{{ msg | linebreaks}}</p>
+<p>{{ msg2 | truncatechars:7 }}</p>
+
+{% filter upper %}
+<p>aaa</p>
+{% endfilter %}
+
+<a href = "{% url 'template_app:home' first_name='daiki' last_name='aa'%}">home</a>
+
+<img src="{% static 'download/sample.jpg' %}">
