@@ -19,7 +19,7 @@ Person.objects.create(
   email = 'ai@example.com',salary=20,
   memo='class', web_site=None
 )
-
+#取得又は作成
 obj, created = Person.objects.get_or_create(
     first_name='daikikiki', last_name='ito',
     email = 'ai@example.com',salary=4000,
