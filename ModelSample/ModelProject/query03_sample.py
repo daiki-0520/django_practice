@@ -22,4 +22,7 @@ print(Students.objects.values('name').annotate(
 
 for student in Students.objects.all():
   print(student.name, student.school.name, student.school)
+
+for student in Students.objects.filter(school__name = '南高校').all():
+  print(student.name, student.school.name, student.school)
   
