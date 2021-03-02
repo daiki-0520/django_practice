@@ -52,7 +52,45 @@ class Prefectures(models.Model):
 
     class Meta:
         db_table='prefectures'
-    
-    
+
+
+class Places(models.Model):
+    name = models.CharField(max_length=50)
+    address = models.CharField(max_length=80)
+
+    class Meta:
+        db_table = 'places'
+
+
+class Restaurants(models.Model):
+    place = models.OneToOneField(
+        Places,
+        on_delete=models.CASCADE,
+        primary_key = True,
+    )
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'restaurants'    
+
+
+class Authors(models.Model):
+    name = models.CharField(max_length = 50)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'authors'
+
+class Books(models.Model):
+    name = models.CharField(max_length= 59)
+    authors = models.ManyToManyField(Authors)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'books'
     
 
