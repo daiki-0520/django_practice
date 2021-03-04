@@ -53,7 +53,8 @@ class BaseForm(forms.ModelForm):
 
 
 class PostModelForm(BaseForm):
-
+    name = forms.CharField(label = '名前')
+    title = forms.CharField(label = 'title')
     memo = forms.CharField(
         widget=forms.Textarea(attrs = {'rows':30, 'cols':20})
     )
@@ -67,3 +68,28 @@ class PostModelForm(BaseForm):
         obj.name = obj.name.upper()
         obj.save()
         return obj
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if name == 'aaa':
+            raise validators.ValidationError('その名前は無効です')
+        return name
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        if title == 'aaa':
+            raise validators.ValidationError('そのtitleは無効です')
+        return title
+
+    def clean(self):
+        cleaned_data = super().clean()
+        title = cleaned_data.get('title')
+        is_exist = Post.objects.filter(title=title).first()
+        if is_exist:
+            raise validators.ValidationError('そのタイトルはそんっざいします')
+
+
+class FormSetPost(forms.Form):
+    title = forms.CharField(label = 'title')
+    memo = forms.CharField(label = 'memo')
+    
