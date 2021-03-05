@@ -9,9 +9,8 @@
   <body>
     <form method="POST">
       {% csrf_token %}
-      {% for form in formset %}
-        {{ form.as_p }}
-      {% endfor %}
+      {{ formset.as_p }}
+      
       <input type="submit" value="送信">
     </form>
   </body>

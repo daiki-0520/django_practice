@@ -1,6 +1,6 @@
 from django import forms
 from django.core import validators
-from .models import Post
+from .models import Post, ModelSetPost, User
 
 def check_name(value):
     if value == 'aaa':
@@ -92,4 +92,12 @@ class PostModelForm(BaseForm):
 class FormSetPost(forms.Form):
     title = forms.CharField(label = 'title')
     memo = forms.CharField(label = 'memo')
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
     
+
+
