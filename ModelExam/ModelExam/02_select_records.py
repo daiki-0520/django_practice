@@ -26,3 +26,4 @@ for class_summary in Classes.objects.values('name', 'students__testresults__test
         class_summary['avg_score'],
         class_summary['sum_score'],
     )
+    
