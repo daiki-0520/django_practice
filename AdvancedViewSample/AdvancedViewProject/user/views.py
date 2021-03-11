@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from user.forms import UserForm, ProfileForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
 # Create your views here.
 def user_list(request):
     return render(request, 'user/user_list.html')
@@ -14,7 +17,16 @@ def register(request):
     user_form = UserForm(request.POST or None)
     profile_form = ProfileForm(request.POST or None, request.FILES or None)
     if user_form.is_valid() and profile_form.is_valid():
-        user = user_form.save()
+        user = user_form.save(commit = False)
+        try:
+            validate_password(user_form.cleaned_data.get('password'),user)
+        except ValidationError as e:
+            user_form.add_error('password',e)
+            return render(request,'user/registration.html', context = {
+                'user_form': user_form,
+                'profile_form': profile_form,
+            })
+
         user.set_password(user.password)
         user.save()
         profile = profile_form.save(commit=False)
