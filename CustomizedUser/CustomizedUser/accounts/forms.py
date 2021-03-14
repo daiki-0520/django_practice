@@ -3,7 +3,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-user = get_user_model() #現在作成しているユーザーが買える
+User = get_user_model() #現在作成しているユーザーが買える
 
 class UserCreationForm(forms.ModelForm):
     password = forms.CharField(label = "password", widget = forms.PasswordInput)
@@ -20,8 +20,21 @@ class UserCreationForm(forms.ModelForm):
         if password != confirm_password:
             raise ValidationError('パスワードが一致しません')
 
-    def save(self):
+    def save(self, commit=False):
         user = super().save(commit = False)
         user.set_password(self.cleaned_data.get('password'))
         user.save()
         return user
+
+class UserChangeForm(forms.ModelForm):
+    password = ReadOnlyPasswordHashField()
+    website = forms.URLField(required = False)
+    picture = forms.FileField(required = False)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'is_staff', 'is_active', 'is_superuser', 'password', 'picture')
+
+    def clean_password(self):
+        #既に登録されているパスワードを返す
+        return self.initial['password']
