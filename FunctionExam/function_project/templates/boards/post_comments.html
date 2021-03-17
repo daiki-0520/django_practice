@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+<h3>{{ theme.title }}<h3>
+</div>
+{% for comment in comments %}
+<div class="col-11 offset-1">
+{% if comment.user.picture%}
+  <img style="float:left;" width="50px" height="50px" src="{{ comment.user.picture.url }}">
+{% endif %}
+</div>
+<div class="col-8 offset-2">
+  <h5>名前:{{ comment.user.username }}</h5>
+  <h5>{{ comment.comment | linebreaks }}</h5>
+</div>
+<div class="col-10 offset-1">
+<hr>
+</div>
+{% endfor %}
+{% if user.is_authenticated %}
+<form method="POST">
+{% csrf_token %}
+{{ post_comment_form.as_p }}
+<input type="submit" value="コメント送信">
+</form>
+{% endif %}
+{% endblock %}
