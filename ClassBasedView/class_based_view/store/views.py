@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.base import(
     View, TemplateView, RedirectView
 )
@@ -10,9 +10,10 @@ from django.views.generic.edit import (
 )
 from . import forms
 from datetime import datetime
-from .models import Books
+from .models import Books, Pictures
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 # Create your views here.
 
 class IndexView(View):
@@ -99,6 +100,22 @@ class BookUpdateView(SuccessMessageMixin, UpdateView):
         return cleaned_data.get('name') + 'を更新しました'
 
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        picture_form = forms.PictureUploadForm()
+        pictures = Pictures.objects.filter_by_book(book=self.object)
+        context['pictures'] = pictures
+        context['picture_form'] = picture_form
+        return context
+
+    def post(self, request, *args, **kwargs):
+        picture_form = forms.PictureUploadForm(request.POST or None, request.FILES or None)
+        if picture_form.is_valid() and request.FILES:
+            book = self.get_object() #更新している本を取得できる
+            picture_form.save(book=book)
+        return super(BookUpdateView, self).post(request, *args, **kwargs)
+
+
 class BookDeleteView(DeleteView):
     model = Books
     template_name = 'delete_book.html'
@@ -124,3 +141,13 @@ class BookRedirectView(RedirectView):
             return reverse_lazy('store:detail_book', kwargs={'pk': kwargs['pk']})
         print(book)
         return reverse_lazy('store:edit_book', kwargs = {'pk': book.pk})
+
+def delete_picture(request, pk):
+    picture = get_object_or_404(Pictures, pk=pk)
+    picture.delete()
+    import os
+    if os.path.isfile(picture.picture.path):
+        os.remove(picture.picture.path)
+
+    messages.success(request, '画像を削除しました')
+    return redirect('store:edit_book', pk=picture.book.id)
