@@ -16,3 +16,17 @@ class BookForm(forms.ModelForm):
         obj.save()
         return obj
 
+
+class BookUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = Books
+        fields = ['name', 'description', 'price']
+
+    def save(self, *args, **kwargs): #override
+        obj = super(BookUpdateForm, self).save(commit = False)
+        obj.update_at = datetime.now()
+        obj.save()
+        return obj
+
+

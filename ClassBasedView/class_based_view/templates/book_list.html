@@ -1,0 +1,13 @@
+<p><a href="{% url 'store:add_book' %}">データ追加</a></p>
+<table>
+<tbody>
+  {% for object in object_list %}
+  <tr>
+    <td><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></td>
+    <td>{{ object.description}}</td>
+    <td><a href="{% url 'store:edit_book' object.id %}"</a>編集</td>
+    <td><a href="{% url 'store:delete_book' object.id %}"</a>sakuzyo </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
