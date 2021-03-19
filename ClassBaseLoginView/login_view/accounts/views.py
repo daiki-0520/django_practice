@@ -1,7 +1,12 @@
-from django.shortcuts import render
-from django.views.generic.edit import CreateView, FormView, 
+from django.shortcuts import render, redirect
+from django.views.generic.edit import (CreateView, FormView)
 from django.views.generic.base import TemplateView, View
-from .form import RegistForm
+from .forms import RegistForm, UserLoginForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
 # Create your views here.
 
 class HomeView(TemplateView):
@@ -14,7 +19,43 @@ class RegistUserView(CreateView):
 
 
 class UserLoginView(FormView):
+    template_name = 'user_login.html'
+    form_class = UserLoginForm
+
+    def post(self, request, *args, **kwargs):
+        email = request.POST['email']
+        password = request.POST['password']
+        user = authenticate(email=email, password=password)
+        next_url = request.POST['next']
+        if user is not None and user.is_active:
+            login(request, user)
+        if next_url:
+            return redirect(next_url)
+        return redirect('accounts:home')
+
+# class UserLogoutView(View):
+    
+#     def get(self, request, *args, **kwargs):
+#         logout(request)
+#         return redirect('accounts:user_login')
+
+
+class UserLoginView(LoginView):
+    template_name = 'user_login.html'
+    authentication_form = UserLoginForm
+
+    def form_valid(self, form):
+        remember = form.cleaned_data['remember']
+        if remember:
+            self.request.session.set_expiry(1200000)
+        return super().form_valid(form)
+
+class UserLogoutView(LogoutView):
     pass
 
-class UserLogoutView(View):
-    pass
+#@method_decorator(login_required, name='dispatch')
+class UserView(LoginRequiredMixin, TemplateView):
+    template_name = 'user.html'
+    #@method_decorator
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)  

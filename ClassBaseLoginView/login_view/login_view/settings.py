@@ -121,3 +121,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+LOGIN_URL = '/accounts/user_login'
+LOGIN_REDIRECT_URL = '/accounts/home'
+LOGOUT_REDIRECT_URL = '/accounts/user_login'
+
+
+SESSION_COOKIE_AGE = 5
